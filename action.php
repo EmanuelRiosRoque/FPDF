@@ -1,5 +1,5 @@
 <?php 
-$conn = new PDO('mysql:host=localhost:33065; dbname=add_more', 'root', '');
+$conn = new PDO('mysql:host=localhost:3306; dbname=add_more', 'root', 'root');
 
 foreach($_POST['product_name'] as $key => $value) {
     $sql = 'INSERT INTO items(name, price, quantity) VALUES (:name, :price, :qty)';

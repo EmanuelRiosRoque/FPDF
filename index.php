@@ -1,5 +1,5 @@
 <?php 
-$conn = new PDO('mysql:host=localhost:33065; dbname=add_more', 'root', '');
+$conn = new PDO('mysql:host=localhost:3306; dbname=add_more', 'root', 'root');
 $sql = 'SELECT * FROM items';
 $stmt = $conn->prepare($sql);
 $stmt->execute();
@@ -109,11 +109,11 @@ $i = 1;
     // $fpdf->Cell(40,6, '2000',  1, 1, 'C', false); 
 
     foreach ($rows as $row) {
-        $fpdf->Cell(40,6, $i, 0, 0, 'C', true); 
+        $fpdf->Cell(40,6, $row['id'], 0, 0, 'C', true); 
         $fpdf->Cell(40,6, $row['name'], 0, 0, 'C', true); 
-        // $fpdf->Cell(40,6, number_format($row->price, 2),   0, 0, 'C', true); 
-        // $fpdf->Cell(40,6, $row->quantity, 0, 0, 'C', true); 
-        // $fpdf->Cell(40,6, number_format($row->price * $row->quantity),  0, 1, 'C', true); 
+        $fpdf->Cell(40,6, number_format($row['price'], 2),   0, 0, 'C', true); 
+        $fpdf->Cell(40,6, $row['quantity'], 0, 0, 'C', true); 
+        $fpdf->Cell(40,6, number_format($row['price'] * $row['quantity']),  0, 1, 'C', true); 
     }
 
     $fpdf->Output();  

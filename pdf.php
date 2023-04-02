@@ -1,109 +1,117 @@
-<?php
-// Mandamos a llamar a la libreria 
-use Dompdf\Dompdf;
-use Dompdf\Options;
-require_once 'vendor/autoload.php';
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add More Field Using</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
-// Llamamos a nuestra conecion db
-$conn = new PDO('mysql:host=localhost:33065; dbname=add_more', 'root', '');
-// Llamamos a toda nuestra tabla "Items"
-$sql = 'SELECT * FROM items';
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$gt = 0;
-$i = 1;
+</head>
 
-$html = '<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invoice</title>
-        <style>
-            h2 {
-                font-family: Verdana, Geneva, Tahoma, sans-serif;
-                text-align: center;
-            }
-            table {
-                font-family: Arial, Helvetica, sans-serif;
-                border-collapse: collapse;
-                width: 100%;
-            }
-            td,th {
-                border: 1px solid #444;
-                padding: 8px;
-                text-align: left;
-            }
-            .my-table {
-                text-align: right;
-            }
-            #sign {
-                padding-top: 50px;
-                text-align: right;
-            }
-        </style>
-    
-    </head>
-    <body>
-        <img src="logo.png">
-        <h2>Factura</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Articulo</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>';
+<body class="bg-dark">
+    <div class="container">
+        <div class="row my-4">
+            <div class="col-lg-10 mx-auto">
+                <div class="card shadow">
+                    <div class="card-header">
+                        <h4>Add Items</h4>
+                    </div>
 
-foreach ($rows as $row) {
-    $html .= '<tr>
-                        <td>' . $i . '</td>
-                        <td>' . $row['name'] . '</td>
-                        <td> $' . number_format($row['price'], 2) . '</td>
-                        <td>' . $row['quantity'] . '</td>
-                        <td> $' . number_format($row['price'] * $row['quantity']) . '</td>
-                    </tr>';
-    $gt += $row['price'] * $row['quantity'];
-    $i++;
-}
+                    <div class="card-body p-4">
+                        <div id="show_alert"></div>
+                        <form action="#" method="POST" id="add_form">
+                            <div id="show_item">
+                                <div class="row">
+                                    <!-- Inputs -->
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" name="product_name[]" class="form-control" placeholder="Nombre Articulo" require>
+                                    </div>
 
-$html .= '</tbody>
-<tr>
-    <th colspan="4" class="my-table">Iva (18%)</th>
-    <th> $'.number_format(($gt*18)/100, 2).'</th>
-</tr>
-<tr>
-    <th colspan="4" class="my-table">Gran Total</th>
-    <th> $'.number_format($gt + ($gt * 18) /  100, 2).'</th>
-</tr>
-<tr>
-    <th colspan="4" class="my-table">Gran Total Redondeando.</th>
-    <th> $'.number_format(round($gt + ($gt * 18) /  100), 2).'</th>
-</tr>
-<tr>
-    <td colspan="5" id="sign">Firma</td>
-</tr>
-</table>
+                                    <div class="col-md-3 mb-3">
+                                        <input type="number" name="product_price[]" class="form-control" placeholder="Precio Articulo" require>
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+                                        <input type="number" name="product_qty[]" class="form-control" placeholder="Cantidad Articulo" require>
+                                    </div>
+
+                                    <div class="col-md-2 mb-3 d-grid">
+                                        <button class="btn btn-success add_item_btn">Agregar Más</button>
+                                    </div>
+                                </div>
+                            </div> <!-- End Row -->
+
+                            <!-- Boton Submit -->
+                            <div>
+                                <input type="submit" value="Agregar" class="btn btn-primary w-25" id="add_btn">
+                                <a href="index.php" class="btn btn-danger" target="_blank">Crear PDF</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $(".add_item_btn").click(function(e) { // Cunado se haga click en el boton agregar "Muestrame este otro contenido"
+                e.preventDefault();
+                $("#show_item").prepend(`
+                <div class="row append_item">
+                                    <!-- Inputs -->
+                                    <div class="col-md-4 mb-3">
+                                        <input type="text" name="product_name[]" class="form-control" placeholder="Nombre Articulo" require>
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+                                        <input type="number" name="product_price[]" class="form-control" placeholder="Precio Articulo" require>
+                                    </div>
+
+                                    <div class="col-md-3 mb-3">
+                                        <input type="number" name="product_qty[]" class="form-control" placeholder="Cantidad Articulo" require>
+                                    </div>
+
+                                    <div class="col-md-2 mb-3 d-grid">
+                                        <button class="btn btn-danger remove_item_btn">Remover</button>
+                                    </div>
+                                </div>
+                            </div> <!-- End Row --> 
+                `);
+            });
+
+            // Si das click en boton "Remover" quita los "Items" agregados
+            $(document).on('click', '.remove_item_btn', function(e) {
+                e.preventDefault()
+                let row_item = $(this).parent().parent();
+                $(row_item).remove();
+            });
+
+            // Solicitud con ajax
+            $("#add_form").submit(function(e) {
+                e.preventDefault();
+                $("add_btn").val('Adding...');
+                $.ajax({
+                    url:"action.php",
+                    method: "post",
+                    data: $(this).serialize(),
+                    success:function(response){
+                        $("#add_btn").val("Add");
+                        $("#add_form")[0].reset();
+                        $(".append_item").remove();
+                        $("#show_alert").html(`<div class="alert alert-success" role="alert">${response}</div>`)
+                    }
+                });
+            });
+        })
+    </script>
+
 </body>
 
-</html>';
-
-
-
-
-$options = new Options;
-$options->set('chroot',realpath(''));
-$dompdf = new Dompdf($options);
-$dompdf->loadHtml($html);
-$dompdf->setPaper('A4', 'portrait');
-$dompdf->render();
-$dompdf->stream('factura.pdf', ['Attachment' => 0]);
-
-?>
+</html>
